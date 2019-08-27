@@ -3,10 +3,10 @@ package com.casulaweather.androiod.db;
 import org.litepal.crud.LitePalSupport;
 
 public class County extends LitePalSupport {
-    private int id;
-    private int cityId;
-    private String cityName;
-    private String weatherId;
+    private int id;//县城类ID
+    private int cityId;//所属城市ID
+    private String countyName;//县城名
+    private String weatherId;//天气ID
 
     public void setId(int id) {
         this.id = id;
@@ -24,12 +24,12 @@ public class County extends LitePalSupport {
         return cityId;
     }
 
-    public String getCityName() {
-        return cityName;
+    public void setCountyName(String countyName) {
+        this.countyName = countyName;
     }
 
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
+    public String getCountyName() {
+        return countyName;
     }
 
     public void setWeatherId(String weatherId) {

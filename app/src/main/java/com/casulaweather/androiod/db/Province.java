@@ -3,9 +3,9 @@ package com.casulaweather.androiod.db;
 import org.litepal.crud.LitePalSupport;
 
 public class Province extends LitePalSupport {
-    private int id;
-    private String provinceName;
-    private int proviceCode;
+    private int id;//省类ID
+    private String provinceName;//省名
+    private int provinceCode;//该省编号
 
     public void setId(int id) {
         this.id = id;
@@ -23,11 +23,11 @@ public class Province extends LitePalSupport {
         return provinceName;
     }
 
-    public void setProviceCode(int proviceCode) {
-        this.proviceCode = proviceCode;
+    public void setProvinceCode(int provinceCode) {
+        this.provinceCode = provinceCode;
     }
 
-    public int getProviceCode() {
-        return proviceCode;
+    public int getProvinceCode() {
+        return provinceCode;
     }
 }
