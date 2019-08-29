@@ -1,4 +1,4 @@
-package com.casulaweather.androiod.db;
+package com.casualweather.android.db;
 
 import org.litepal.crud.LitePalSupport;
 

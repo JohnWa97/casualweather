@@ -4,8 +4,8 @@
 
     <!--数据库映射列表-->
     <list>
-        <mapping class="com.casulaweather.androiod.db.Province"/>
-        <mapping class="com.casulaweather.androiod.db.City"/>
-        <mapping class="com.casulaweather.androiod.db.County"/>
+        <mapping class="com.casualweather.android.db.Province"/>
+        <mapping class="com.casualweather.android.db.City"/>
+        <mapping class="com.casualweather.android.db.County"/>
     </list>
 </litepal>

@@ -1,8 +1,8 @@
-package com.casulaweather.androiod;
+package com.casualweather.android;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,11 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.casulaweather.androiod.db.City;
-import com.casulaweather.androiod.db.County;
-import com.casulaweather.androiod.db.Province;
-import com.casulaweather.androiod.util.HttpUtil;
-import com.casulaweather.androiod.util.Utility;
+import com.casualweather.android.R;
+import com.casualweather.android.db.City;
+import com.casualweather.android.db.County;
+import com.casualweather.android.db.Province;
+import com.casualweather.android.util.HttpUtil;
+import com.casualweather.android.util.Utility;
 
 import org.litepal.LitePal;
 
@@ -85,6 +86,12 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounty();//查询县城
+                }else if(currentLevel==LEVEL_COUNTY){
+                    String weatherId=countyList.get(position).getWeatherId();
+                    Intent intent=new Intent(getActivity(),WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -105,7 +112,7 @@ public class ChooseAreaFragment extends Fragment {
     //查询并显示省份信息
     private void queryProvinces(){
         titleText.setText("中国");
-        showFlag.setImageResource(R.drawable.flag);
+        showFlag.setImageResource(R.drawable.flag2);
         backButton.setVisibility(View.GONE);//设置按钮不可见
         provinceList=LitePal.findAll(Province.class);//从数据库中查找数据
         if(provinceList.size()>0){//如果数据库中有省级数据则将数据存入dataList
@@ -127,6 +134,7 @@ public class ChooseAreaFragment extends Fragment {
     //查询并显示城市信息
     private void queryCities(){
         titleText.setText(selectedProvince.getProvinceName());
+        showFlag.setImageResource(R.drawable.county);
         backButton.setVisibility(View.VISIBLE);
         cityList=LitePal.where("provinceid=?",String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size()>0){
@@ -147,6 +155,7 @@ public class ChooseAreaFragment extends Fragment {
     //查询并显示县城信息
     private void queryCounty(){
         titleText.setText(selectedCity.getCityName());
+        showFlag.setImageResource(R.drawable.county);
         backButton.setVisibility(View.VISIBLE);
         countyList=LitePal.where("cityid=?",String.valueOf(selectedCity.getId())).find(County.class);
         if (countyList.size()>0){
@@ -218,8 +227,8 @@ public class ChooseAreaFragment extends Fragment {
     private void showProgressDialog(){
         if (progressDialog==null){
             progressDialog=new ProgressDialog(getActivity());//获取相应的活动，实例化进度条
-            progressDialog.setTitle("佛系提示");
-            progressDialog.setMessage("加载成功与否，随缘...");
+            progressDialog.setTitle("加载中");
+            progressDialog.setMessage("请稍等一下...");
         }
         progressDialog.show();
     }

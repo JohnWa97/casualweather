@@ -1,4 +1,4 @@
-package com.casulaweather.androiod.util;
+package com.casualweather.android.util;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

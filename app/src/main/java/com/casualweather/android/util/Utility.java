@@ -1,11 +1,13 @@
-package com.casulaweather.androiod.util;
+package com.casualweather.android.util;
 
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.casulaweather.androiod.db.City;
-import com.casulaweather.androiod.db.County;
-import com.casulaweather.androiod.db.Province;
+import com.casualweather.android.db.City;
+import com.casualweather.android.db.County;
+import com.casualweather.android.db.Province;
+import com.casualweather.android.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +79,21 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    //解析和天气数据
+    public static Weather handleWeatherResponse(String response){
+        try{
+            JSONObject jsonObject=new JSONObject(response);
+            JSONArray jsonArray=jsonObject.getJSONArray("HeWeather");
+            String weatherContent=jsonArray.getJSONObject(0).toString();//获取天气信息的主体内容
+            return new Gson().fromJson(weatherContent,Weather.class);//将JSON数据转换成weather对象
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }
