@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">佛系天气</string>
+    <string name="project_address">开源地址:github.com/JohnWa97/casualweather</string>
+    <string name="introduction">佛系天气，快乐给力！Beta抢先版为测试版本，数据因接口问题均为有误数据，仅供参考！欢迎使用者来信反馈，后期将持续更新提供正确准时的天气信息,尽情期待！</string>
 </resources>

@@ -1,10 +1,12 @@
 package com.casualweather.android;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telecom.Call;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.casualweather.android.R;
@@ -29,14 +35,13 @@ import com.casualweather.android.util.HttpUtil;
 import com.casualweather.android.util.Utility;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.util.zip.Inflater;
-
-import interfaces.heweather.com.interfacesmodule.view.HeConfig;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
+
+    private IntentFilter intentFilter;
+    private NetWorkChangeReceiver netWorkChangeReceiver;
 
     private ScrollView weatherLayout;
     private TextView titleCity;
@@ -57,20 +62,48 @@ public class WeatherActivity extends AppCompatActivity {
 
     public DrawerLayout drawerLayout;
     private Button navButton;
+    private Button menuButton;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.about_menu,menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.about:
+                Intent intent=new Intent(WeatherActivity.this,AboutActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.exit_app:
+                finish();
+                break;
+            default:
+                    break;
+
+        }
+        return true;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        if (Build.VERSION.SDK_INT>=21){//安卓5.0以上则执行状态栏透明
-//            View decorView=getWindow().getDecorView();
-//            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-//            getWindow().setStatusBarColor(Color.TRANSPARENT);
-//        }
         setContentView(R.layout.activity_weather);
+        Toolbar toolbar=(Toolbar)findViewById(R.id.tool_bar);
+       if (toolbar!=null){
+           toolbar.setTitle("");
+       }
+        setSupportActionBar(toolbar);
+       // getActionBar().setDisplayShowTitleEnabled(false);
 
-        HeConfig.init("HE1908281458301612", "909d069adc2a4494826396f829d888dc");
-        HeConfig.switchToFreeServerNode();
+        //状态栏透明
+        TransparentBar.getInstance().Immersive(getWindow(),getSupportActionBar());
+
 
         weatherLayout=(ScrollView)findViewById(R.id.weather_layout);
         titleCity=(TextView)findViewById(R.id.title_city);
@@ -88,6 +121,8 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);//刷新时的颜色
         drawerLayout=(DrawerLayout)findViewById(R.id.drawer_layout);//侧滑菜单栏布局
         navButton=(Button)findViewById(R.id.nav_button); //home键按钮
+      //  menuButton=(Button)findViewById(R.id.menu_button);
+
 
         navButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +131,21 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
 
+//        menuButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ActionBar actionBar=getSupportActionBar();
+//               // actionBar.addOnMenuVisibilityListener();
+//                Toast.makeText(WeatherActivity.this, "假菜单", Toast.LENGTH_SHORT).show();
+//
+//            }
+//        });
+
+        //判断是否有网
+        intentFilter=new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        netWorkChangeReceiver=new NetWorkChangeReceiver();
+        registerReceiver(netWorkChangeReceiver,intentFilter);
 
         SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);//设置本地缓存
         String weatherString=prefs.getString("weather",null);//获取缓存中的信息
@@ -113,6 +163,7 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 requestWeather(mWeatherId);
+               // Toast.makeText(WeatherActivity.this, "刷新成功！", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -150,6 +201,7 @@ public class WeatherActivity extends AppCompatActivity {
                         }else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败，请再试一次吧！", Toast.LENGTH_SHORT).show();
                         }
+                        Toast.makeText(WeatherActivity.this, "刷新成功！", Toast.LENGTH_SHORT).show();
                         swipeRefresh.setRefreshing(false);//刷新结束
                     }
                 });
@@ -162,7 +214,7 @@ public class WeatherActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(WeatherActivity.this, "服务器未响应，获取天气信息失败！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(WeatherActivity.this, "获取天气信息失败！请检查网络", Toast.LENGTH_SHORT).show();
                         swipeRefresh.setRefreshing(false);//刷新结束
                     }
                 });
@@ -245,4 +297,9 @@ public class WeatherActivity extends AppCompatActivity {
         startService(intent);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(netWorkChangeReceiver);
+    }
 }

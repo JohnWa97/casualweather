@@ -57,21 +57,22 @@ public class ChooseAreaFragment extends Fragment {
     private County selectedCounty;
     //当前所选等级
     private int currentLevel;
+    public NetWorkChangeReceiver netWorkChangeReceiver=new NetWorkChangeReceiver();
 
     @Nullable
     @Override//创建视图
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.choose_area,container,false);//获取choose_area布局
-        titleText=(TextView)view.findViewById(R.id.title_text);
-        showFlag=(ImageView)view.findViewById(R.id.show_flag);
-        backButton=(Button)view.findViewById(R.id.back_button);
-        listView=(ListView)view.findViewById(R.id.list_view);
+        View view = inflater.inflate(R.layout.choose_area, container, false);//获取choose_area布局
+        titleText = (TextView) view.findViewById(R.id.title_text);
+        showFlag = (ImageView) view.findViewById(R.id.show_flag);
+        backButton = (Button) view.findViewById(R.id.back_button);
+        listView = (ListView) view.findViewById(R.id.list_view);
 
-        adapter=new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,dataList);//将数据传入适配器
+        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList);//将数据传入适配器
+
         listView.setAdapter(adapter);//列表显示适配器数据
 
         return view;
-
     }
 
     @Override
@@ -185,6 +186,7 @@ public class ChooseAreaFragment extends Fragment {
     //从服务器上查询数据
     private void queryFromServer(String address,final String type){
         showProgressDialog();//显示加载进度条
+
         HttpUtil.sendOkHttpRequest(address, new Callback() {
 
             @Override//服务器响应
@@ -214,7 +216,6 @@ public class ChooseAreaFragment extends Fragment {
                     });
                 }
             }
-
             @Override//服务器未响应
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
